@@ -31,19 +31,21 @@ CREATE TABLE Orders_log (
     changed_at DATETIME DEFAULT GETDATE(),
     is_processed BIT DEFAULT 0
 );
-
+```
 ## ⚙️ Kurulum ve Çalıştırma
 
 ### 1. Bağımlılıkları Yükleyin
 Sistemin çalışması için gerekli Python kütüphanelerini aşağıdaki komutla yükleyebilirsiniz:
 ```bash
 pip install pyodbc pymongo
+```
 
 ### 3. Servisi Başlatın
 Tüm ayarlar tamamlandıktan sonra terminal üzerinden servisi ayağa kaldırın:
 
 ```bash
 python main.py
+```
 
 ## 🔄 Çalışma Mantığı ve Mimari
 1. **Polling:** `main.py` içerisindeki sonsuz döngü, her 5 saniyede bir `process_logs()` fonksiyonunu tetikler.
