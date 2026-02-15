@@ -15,23 +15,6 @@ Bu proje, SQL Server üzerindeki `Orders` tablosunda meydana gelen değişiklikl
 ## 📋 Veritabanı Gereksinimleri
 Servisin çalışabilmesi için SQL Server tarafında bir `Orders_log` tablosunun bulunması ve bu tablonun işlenme durumunu belirten `is_processed` bayrağını içermesi gerekmektedir. 
 
-Örnek SQL yapısı:
-```sql
-CREATE TABLE Orders_log (
-    log_id INT PRIMARY KEY IDENTITY(1,1),
-    operation_type VARCHAR(10),
-    order_id INT,
-    customer_id INT,
-    old_order_product NVARCHAR(100),
-    old_order_amount DECIMAL(18,2),
-    old_order_status NVARCHAR(50),
-    new_order_product NVARCHAR(100),
-    new_order_amount DECIMAL(18,2),
-    new_order_status NVARCHAR(50),
-    changed_at DATETIME DEFAULT GETDATE(),
-    is_processed BIT DEFAULT 0
-);
-```
 ## ⚙️ Kurulum ve Çalıştırma
 
 ### 1. Bağımlılıkları Yükleyin
