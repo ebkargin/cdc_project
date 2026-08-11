@@ -1,47 +1,43 @@
 # SQL Server to MongoDB CDC (Change Data Capture) Service
 
-Bu proje, SQL Server üzerindeki `Orders` tablosunda meydana gelen değişiklikleri (Insert, Update, Delete) bir log tablosu üzerinden takip ederek **MongoDB**'ye asenkron olarak aktaran bir veri senkronizasyon servisidir.
+This project is a data synchronization service that tracks changes (Insert, Update, Delete) occurring in the `Orders` table on SQL Server via a log table and asynchronously transfers them to **MongoDB**.
 
-## 🚀 Proje Amacı
-İlişkisel veritabanındaki (SQL Server) kritik veri değişimlerini, analiz veya hızlı sorgulama amacıyla doküman tabanlı bir yapıya (MongoDB) gerçek zamanlıya yakın bir şekilde taşımaktır.
+## 🚀 Project Purpose
+The purpose of this project is to transfer critical data changes from a relational database (SQL Server) to a document-based structure (MongoDB) in near real-time for analysis or fast querying purposes.
 
-## 🛠️ Kullanılan Teknolojiler
+## 🛠️ Technologies Used
 * **Python 3.x**
-* **SQL Server (T-SQL):** Kaynak veritabanı.
-* **MongoDB:** Hedef veri deposu.
-* **PyODBC:** SQL Server bağlantısı için kullanılan kütüphane.
-* **PyMongo:** MongoDB entegrasyonu için kullanılan kütüphane.
+* **SQL Server (T-SQL):** Source database.
+* **MongoDB:** Target data store.
+* **PyODBC:** Library used for SQL Server connection.
+* **PyMongo:** Library used for MongoDB integration.
 
-## 📋 Veritabanı Gereksinimleri
-Servisin çalışabilmesi için SQL Server tarafında bir `Orders_log` tablosunun bulunması ve bu tablonun işlenme durumunu belirten `is_processed` bayrağını içermesi gerekmektedir. 
+## 📋 Database Requirements
+For the service to run, an `Orders_log` table must exist on the SQL Server side, and this table must contain an `is_processed` flag indicating its processing status.
 
-## ⚙️ Kurulum ve Çalıştırma
+## ⚙️ Installation and Execution
 
-### 1. Bağımlılıkları Yükleyin
-Sistemin çalışması için gerekli Python kütüphanelerini aşağıdaki komutla yükleyebilirsiniz:
-```bash
-pip install pyodbc pymongo
-```
+### 1. Install Dependencies
+You can install the Python libraries required for the system to run using the following command:
+`pip install pyodbc pymongo`
 
-### 3. Servisi Başlatın
-Tüm ayarlar tamamlandıktan sonra terminal üzerinden servisi ayağa kaldırın:
+### 3. Start the Service
+After all settings are completed, spin up the service via the terminal:
 
-```bash
-python main.py
-```
+`python main.py`
 
-## 🔄 Çalışma Mantığı ve Mimari
-1. **Polling:** `main.py` içerisindeki sonsuz döngü, her 5 saniyede bir `process_logs()` fonksiyonunu tetikler.
-2. **Yakalama (Capture):** `Orders_log` tablosunda henüz işlenmemiş (`is_processed = 0`) olan tüm kayıtlar `changed_at` sırasına göre SQL Server'dan çekilir.
-3. **Dönüştürme (Mapping):** Çekilen satır verileri, MongoDB'nin esnek doküman yapısına uygun bir JSON objesine dönüştürülür. Eski veriler `old`, güncel veriler ise `new` anahtarı altında gruplanır.
-4. **Yükleme (Load):** Hazırlanan dokümanlar MongoDB'deki `cdc_logs` veritabanına kaydedilir.
-5. **İşaretleme (Update):** Aktarımı başarıyla tamamlanan her kayıt, SQL tarafında tekrar işlenmemesi için `is_processed = 1` olarak güncellenir.
+## 🔄 Operating Logic and Architecture
+1. **Polling:** The infinite loop inside `main.py` triggers the `process_logs()` function every 5 seconds.
+2. **Capture:** All unprocessed records (`is_processed = 0`) in the `Orders_log` table are retrieved from SQL Server ordered by `changed_at`.
+3. **Mapping:** The fetched row data is transformed into a JSON object compatible with MongoDB's flexible document structure. Old data is grouped under the `old` key, and updated data under the `new` key.
+4. **Load:** The prepared documents are saved to the `cdc_logs` database in MongoDB.
+5. **Update:** Each record successfully transferred is updated as `is_processed = 1` on the SQL side so that it is not processed again.
 
-## 📁 Proje Dosya Yapısı
-* **`main.py`**: Uygulamanın giriş noktası ve döngü yönetimi.
-* **`cdc_service.py`**: Veri işleme, dönüşüm ve SQL-NoSQL arası mantıksal akış.
-* **`db.py`**: SQL Server bağlantı konfigürasyonu.
-* **`mongo.py`**: MongoDB bağlantı konfigürasyonu.
+## 📁 Project File Structure
+* **`main.py`**: Entry point of the application and loop management.
+* **`cdc_service.py`**: Data processing, transformation, and logical flow between SQL-NoSQL.
+* **`db.py`**: SQL Server connection configuration.
+* **`mongo.py`**: MongoDB connection configuration.
 
 ---
-**Geliştiren:** [Ertuğrul Berk Kargın](https://github.com/ebkargin)
+**Developer:** [Ertuğrul Berk Kargın](https://github.com/ebkargin)
